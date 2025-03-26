@@ -592,6 +592,7 @@ class InstalledApp(Base):
     is_pinned = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     last_used_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
+    created_by = db.Column(StringUUID, nullable=False)
 
     @property
     def app(self):

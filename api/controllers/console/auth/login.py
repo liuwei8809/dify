@@ -217,6 +217,37 @@ class EmailCodeLoginApi(Resource):
         AccountService.reset_login_error_rate_limit(args["email"])
         return {"result": "success", "data": token_pair.model_dump()}
 
+class MSSSOLoginApi(Resource):
+    @setup_required
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("email", type=str, required=True, location="json")
+        parser.add_argument("name", type=str, required=True, location="json")
+        parser.add_argument("token", type=str, required=True, location="json")
+        args = parser.parse_args()
+
+        # need to do
+        # here need add check the validation of the token.
+
+        user_email = args["email"]
+
+        account = AccountService.get_user_through_email(user_email)
+        if account:
+            tenant = TenantService.get_join_tenants(account)
+            if not tenant:
+                # add code to join one existed first workspace
+                TenantService.join_first_existed_tenant_as_editor(account=account)
+
+        if account is None:
+            try:
+                account = AccountService.create_mssso_account_and_join_existed_tenant(
+                    email=user_email, name=user_email, interface_language=languages[0]
+                )
+            except WorkSpaceNotAllowedCreateError:
+                return NotAllowedCreateWorkspace()
+        token_pair = AccountService.login(account, ip_address=extract_remote_ip(request))
+        AccountService.reset_login_error_rate_limit(args["email"])
+        return {"result": "success", "data": token_pair.model_dump()}
 
 class RefreshTokenApi(Resource):
     def post(self):
@@ -236,4 +267,5 @@ api.add_resource(LogoutApi, "/logout")
 api.add_resource(EmailCodeLoginSendEmailApi, "/email-code-login")
 api.add_resource(EmailCodeLoginApi, "/email-code-login/validity")
 api.add_resource(ResetPasswordSendEmailApi, "/reset-password")
+api.add_resource(MSSSOLoginApi, "/mssso-login")
 api.add_resource(RefreshTokenApi, "/refresh-token")

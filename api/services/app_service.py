@@ -59,7 +59,7 @@ class AppService:
                 filters.append(App.id.in_(target_ids))
             else:
                 return None
-
+        filters.append(App.created_by == current_user.id)
         app_models = db.paginate(
             db.select(App).where(*filters).order_by(App.created_at.desc()),
             page=args["page"],

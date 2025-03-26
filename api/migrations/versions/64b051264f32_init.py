@@ -1,7 +1,7 @@
 """init
 
 Revision ID: 64b051264f32
-Revises: 
+Revises:
 Create Date: 2023-05-13 14:26:59.085018
 
 """
@@ -361,6 +361,7 @@ def upgrade():
     sa.Column('is_pinned', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.Column('last_used_at', sa.DateTime(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('CURRENT_TIMESTAMP(0)'), nullable=False),
+    sa.Column('created_by', postgresql.UUID(), nullable=False),
     sa.PrimaryKeyConstraint('id', name='installed_app_pkey'),
     sa.UniqueConstraint('tenant_id', 'app_id', name='unique_tenant_app')
     )

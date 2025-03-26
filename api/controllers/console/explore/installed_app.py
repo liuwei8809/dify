@@ -32,8 +32,9 @@ class InstalledAppsListApi(Resource):
                 .all()
             )
         else:
-            installed_apps = db.session.query(InstalledApp).filter(InstalledApp.tenant_id == current_tenant_id).all()
-
+            #installed_apps = db.session.query(InstalledApp).filter(InstalledApp.tenant_id == current_tenant_id).all()
+            current_created_by = current_user.id
+            installed_apps = db.session.query(InstalledApp).filter(InstalledApp.created_by == current_created_by).filter(InstalledApp.tenant_id == current_tenant_id).all()
         current_user.role = TenantService.get_user_role(current_user, current_user.current_tenant)
         installed_app_list: list[dict[str, Any]] = [
             {
@@ -44,6 +45,7 @@ class InstalledAppsListApi(Resource):
                 "last_used_at": installed_app.last_used_at,
                 "editable": current_user.role in {"owner", "admin"},
                 "uninstallable": current_tenant_id == installed_app.app_owner_tenant_id,
+                "created_by": current_user.id == installed_app.created_by,
             }
             for installed_app in installed_apps
             if installed_app.app is not None

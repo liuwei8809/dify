@@ -244,6 +244,19 @@ class AccountService:
         return account
 
     @staticmethod
+    def create_mssso_account_and_join_existed_tenant(
+        email: str, name: str, interface_language: str, password: Optional[str] = None
+    ) -> Account:
+        """create account"""
+        account = AccountService.create_account(
+            email=email, name=name, interface_language=interface_language, password=password
+        )
+
+        TenantService.join_first_existed_tenant_as_editor(account=account)
+
+        return account
+
+    @staticmethod
     def create_account_and_tenant(
         email: str, name: str, interface_language: str, password: Optional[str] = None
     ) -> Account:
@@ -620,6 +633,16 @@ class TenantService:
         account.current_tenant = tenant
         db.session.commit()
         tenant_was_created.send(tenant)
+
+    @staticmethod
+    def join_first_existed_tenant_as_editor(
+        account: Account, name: Optional[str] = None
+    ):
+        """Join one existed tenant"""
+        tenant = db.session.query(Tenant).order_by(Tenant.created_at.asc()).first()
+
+        TenantService.create_tenant_member(tenant, account, role="editor")
+        account.current_tenant = tenant
 
     @staticmethod
     def create_tenant_member(tenant: Tenant, account: Account, role: str = "normal") -> TenantAccountJoin:
