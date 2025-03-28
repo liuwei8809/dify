@@ -20,7 +20,7 @@ COPY package.json .
 COPY pnpm-lock.yaml .
 
 # if you located in China, you can use taobao registry to speed up
-# RUN pnpm install --frozen-lockfile --registry https://registry.npmmirror.com/
+RUN pnpm install --frozen-lockfile --registry https://registry.npmmirror.com/
 
 RUN pnpm install --frozen-lockfile
 
@@ -63,7 +63,7 @@ COPY docker/entrypoint.sh ./entrypoint.sh
 
 
 # global runtime packages
-RUN pnpm add -g pm2 \
+RUN pnpm add -g pm2 --registry https://registry.npmmirror.com/ \
     && mkdir /.pm2 \
     && chown -R 1001:0 /.pm2 /app/web \
     && chmod -R g=u /.pm2 /app/web
