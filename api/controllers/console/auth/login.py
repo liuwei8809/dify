@@ -230,7 +230,7 @@ class MSSSOLoginApi(Resource):
         # here need add check the validation of the token.
 
         user_email = args["email"]
-
+        user_name = args["name"]
         account = AccountService.get_user_through_email(user_email)
         if account:
             tenant = TenantService.get_join_tenants(account)
@@ -241,7 +241,7 @@ class MSSSOLoginApi(Resource):
         if account is None:
             try:
                 account = AccountService.create_mssso_account_and_join_existed_tenant(
-                    email=user_email, name=user_email, interface_language=languages[0]
+                    email=user_email, name=user_name, interface_language=languages[0]
                 )
             except WorkSpaceNotAllowedCreateError:
                 return NotAllowedCreateWorkspace()
