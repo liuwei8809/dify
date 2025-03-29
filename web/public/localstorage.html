@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>过渡页面</title>
+  </head>
+  <body>
+    <script>
+      // 从URL中获取参数函数
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+        const results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return "";
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+
+      // 获取token并存入localStorage
+      function storeTokensAndRedirect() {
+        const access_token = getParameterByName("access_token");
+        const refresh_token = getParameterByName("refresh_token");
+        if (access_token && refresh_token) {
+          localStorage.setItem("console_token", access_token);
+          localStorage.setItem("refresh_token", refresh_token);
+        }
+        window.location.href = "/apps";
+      }
+      // 页面加载时执行
+      window.onload = storeTokensAndRedirect;
+    </script>
+  </body>
+</html>
