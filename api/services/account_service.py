@@ -244,7 +244,7 @@ class AccountService:
         return account
 
     @staticmethod
-    def create_mssso_account_and_join_existed_tenant(
+    def create_tenwhale_account_and_join_existed_tenant(
         email: str, name: str, interface_language: str, password: Optional[str] = None
     ) -> Account:
         """create account"""

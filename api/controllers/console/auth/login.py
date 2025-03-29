@@ -217,17 +217,13 @@ class EmailCodeLoginApi(Resource):
         AccountService.reset_login_error_rate_limit(args["email"])
         return {"result": "success", "data": token_pair.model_dump()}
 
-class MSSSOLoginApi(Resource):
+class TenwhaleRemoteLoginApi(Resource):
     @setup_required
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("email", type=str, required=True, location="json")
         parser.add_argument("name", type=str, required=True, location="json")
-        parser.add_argument("token", type=str, required=True, location="json")
         args = parser.parse_args()
-
-        # need to do
-        # here need add check the validation of the token.
 
         user_email = args["email"]
         user_name = args["name"]
@@ -240,7 +236,7 @@ class MSSSOLoginApi(Resource):
 
         if account is None:
             try:
-                account = AccountService.create_mssso_account_and_join_existed_tenant(
+                account = AccountService.create_tenwhale_account_and_join_existed_tenant(
                     email=user_email, name=user_name, interface_language=languages[0]
                 )
             except WorkSpaceNotAllowedCreateError:
@@ -267,5 +263,5 @@ api.add_resource(LogoutApi, "/logout")
 api.add_resource(EmailCodeLoginSendEmailApi, "/email-code-login")
 api.add_resource(EmailCodeLoginApi, "/email-code-login/validity")
 api.add_resource(ResetPasswordSendEmailApi, "/reset-password")
-api.add_resource(MSSSOLoginApi, "/mssso-login")
+api.add_resource(TenwhaleRemoteLoginApi, "/tenwhale-remote-login")
 api.add_resource(RefreshTokenApi, "/refresh-token")
