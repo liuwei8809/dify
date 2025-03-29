@@ -174,6 +174,10 @@ CELERY_MIN_WORKERS=
 API_TOOL_DEFAULT_CONNECT_TIMEOUT=10
 API_TOOL_DEFAULT_READ_TIMEOUT=60
 
+#enable model api invoke load balance
+MODEL_LB_ENABLED=true
+#allow to  user register
+ALLOW_REGISTER=true
 
 # ------------------------------
 # Database Configuration
